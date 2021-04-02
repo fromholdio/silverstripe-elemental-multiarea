@@ -5,6 +5,7 @@ namespace Fromholdio\ElementalMultiArea\Extensions;
 use DNADesign\Elemental\Extensions\ElementalAreasExtension;
 use DNADesign\Elemental\Forms\ElementalAreaField;
 use DNADesign\Elemental\Models\BaseElement;
+use DNADesign\Elemental\Models\ElementalArea;
 use DNADesign\ElementalUserForms\Model\ElementForm;
 use SilverStripe\CMS\Model\RedirectorPage;
 use SilverStripe\CMS\Model\VirtualPage;
@@ -12,6 +13,7 @@ use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\LiteralField;
+use SilverStripe\Versioned\Versioned;
 
 class MultiElementalAreasExtension extends ElementalAreasExtension
 {
@@ -109,17 +111,39 @@ class MultiElementalAreasExtension extends ElementalAreasExtension
 
     public function ensureElementalAreasExist($elementalAreaRelations)
     {
+        if (Versioned::get_stage() !== Versioned::DRAFT) {
+            return;
+        }
+
         $hasOnes = $this->getOwner()->hasOne();
-        foreach ($elementalAreaRelations as $eaRelationship) {
-            $areaID = $eaRelationship . 'ID';
+        foreach ($elementalAreaRelations as $eaRelationship)
+        {
+            $areaRelationIDFieldName = $eaRelationship . 'ID';
             $eaClassName = $hasOnes[$eaRelationship];
 
-            if (!$this->owner->$areaID || !($existing = $eaClassName::get()->byID($this->owner->$areaID)) || !$existing->exists()) {
+            $areaID = (int) $this->getOwner()->$areaRelationIDFieldName;
+            $area = ElementalArea::get()->find('ID', $areaID);
+
+            $myClass = get_class($this->getOwner());
+
+            if (
+                $areaID < 1
+                || !$area
+                || !$area->exists()
+            ) {
                 $area = $eaClassName::create();
-                $area->OwnerClassName = get_class($this->owner);
-                $area->write();
-                $this->owner->$areaID = $area->ID;
             }
+
+            if ($area->ClassName !== $eaClassName) {
+                $area->ClassName = $eaClassName;
+            }
+
+            if ($area->OwnerClassName !== $myClass) {
+                $area->OwnerClassName = $myClass;
+            }
+
+            $area->write();
+            $this->owner->$areaRelationIDFieldName = $area->ID;
         }
         return $this->owner;
     }
