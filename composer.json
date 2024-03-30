@@ -13,10 +13,9 @@
 		"homepage": "https://fromhold.io"
 	}],
 	"require": {
-		"php": ">=5.6",
-		"silverstripe/vendor-plugin": "^1.0",
-		"dnadesign/silverstripe-elemental": "^4.0.0",
-		"stevie-mayhew/hasoneedit": "~2.0"
+		"silverstripe/vendor-plugin": "^1 || ^2",
+		"dnadesign/silverstripe-elemental": "^4 || ^5",
+		"stevie-mayhew/hasoneedit": "^2"
 	},
 	"autoload": {
 		"psr-4": {
