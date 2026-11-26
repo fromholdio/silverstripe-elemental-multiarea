@@ -1,27 +1,33 @@
 {
-	"name": "fromholdio/silverstripe-elemental-multiarea",
-	"type": "silverstripe-vendormodule",
-	"description": "Extends elemental to allow for subclassing ElementalArea and per-EA-relation allowed/disallowed Element types.",
-	"license": "BSD-3-Clause",
-	"keywords": ["silverstripe", "elemental", "elementalarea"],
-	"homepage": "https://github.com/fromholdio/silverstripe-elemental-multiarea",
-	"support": {
-		"issues": "https://github.com/fromholdio/silverstripe-elemental-multiarea/issues"
-	},
-	"authors": [{
-		"name": "Luke Fromhold",
-		"homepage": "https://fromhold.io"
-	}],
-	"require": {
-		"silverstripe/vendor-plugin": "^1 || ^2",
-		"dnadesign/silverstripe-elemental": "^4 || ^5",
-		"stevie-mayhew/hasoneedit": "^2"
-	},
-	"autoload": {
-		"psr-4": {
-			"Fromholdio\\ElementalMultiArea\\": "src/"
-		}
-	},
-	"prefer-stable": true,
-	"minimum-stability": "dev"
+    "name": "fromholdio/silverstripe-elemental-multiarea",
+    "type": "silverstripe-vendormodule",
+    "description": "Extends elemental to allow for subclassing ElementalArea and per-EA-relation allowed/disallowed Element types.",
+    "license": "BSD-3-Clause",
+    "keywords": [
+        "silverstripe",
+        "elemental",
+        "elementalarea"
+    ],
+    "homepage": "https://github.com/fromholdio/silverstripe-elemental-multiarea",
+    "support": {
+        "issues": "https://github.com/fromholdio/silverstripe-elemental-multiarea/issues"
+    },
+    "authors": [
+        {
+            "name": "Luke Fromhold",
+            "homepage": "https://fromhold.io"
+        }
+    ],
+    "require": {
+        "silverstripe/vendor-plugin": "^3",
+        "dnadesign/silverstripe-elemental": "^6",
+        "fromholdio/silverstripe-hasoneedit": "^3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Fromholdio\\ElementalMultiArea\\": "src/"
+        }
+    },
+    "prefer-stable": true,
+    "minimum-stability": "dev"
 }
