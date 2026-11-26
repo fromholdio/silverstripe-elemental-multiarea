@@ -3,17 +3,16 @@
 namespace Fromholdio\ElementalMultiArea\Extensions;
 
 use DNADesign\Elemental\Forms\ElementalAreaField;
-use SGN\HasOneEdit\HasOneEdit;
-use SilverStripe\ORM\DataExtension;
+use Fromholdio\HasOneEdit\HasOneEdit;
+use SilverStripe\Core\Extension;
 
-class FieldsElementalAreaExtension extends DataExtension
+class FieldsElementalAreaExtension extends Extension
 {
     public function provideElementalAreaFields($relationName, $types)
     {
         if ($this->getOwner()->hasMethod('getElementalCMSFields')) {
             $fields = $this->getOwner()->getElementalCMSFields($relationName, $types);
-        }
-        else {
+        } else {
             $fields = $this->getOwner()->getCMSFields();
 
             $editorField = ElementalAreaField::create(

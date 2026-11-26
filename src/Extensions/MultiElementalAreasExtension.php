@@ -6,7 +6,6 @@ use DNADesign\Elemental\Extensions\ElementalAreasExtension;
 use DNADesign\Elemental\Forms\ElementalAreaField;
 use DNADesign\Elemental\Models\BaseElement;
 use DNADesign\Elemental\Models\ElementalArea;
-use DNADesign\ElementalUserForms\Model\ElementForm;
 use SilverStripe\CMS\Model\RedirectorPage;
 use SilverStripe\CMS\Model\VirtualPage;
 use SilverStripe\Core\ClassInfo;
@@ -17,22 +16,28 @@ use SilverStripe\Versioned\Versioned;
 
 class MultiElementalAreasExtension extends ElementalAreasExtension
 {
-    private static $elemental_tab_path = 'Root.Main';
-    private static $elemental_insert_before = 'Metadata';
-    private static $elemental_replace_contentfield = false;
-    private static $elemental_clear_contentfield = false;
-    private static $elemental_base_class = BaseElement::class;
+    private static string $elemental_tab_path = 'Root.Main';
 
-    private static $clear_contentfield = false;
-    private static $sort_types_alphabetically = true;
-    private static $ignored_classes = [
+    private static string $elemental_insert_before = 'Metadata';
+
+    private static bool $elemental_replace_contentfield = false;
+
+    private static bool $elemental_clear_contentfield = false;
+
+    private static string $elemental_base_class = BaseElement::class;
+
+    private static bool $clear_contentfield = false;
+
+    private static bool $sort_types_alphabetically = true;
+
+    private static array $ignored_classes = [
         RedirectorPage::class,
         VirtualPage::class
     ];
 
     private static $elemental_relations;
 
-    public function updateCMSFields(FieldList $fields)
+    protected function updateCMSFields(FieldList $fields)
     {
         if (!$this->getOwner()->supportsElemental()) {
             return;
@@ -42,7 +47,6 @@ class MultiElementalAreasExtension extends ElementalAreasExtension
 
         $elementalAreaRelations = $this->getOwner()->getElementalRelations();
         foreach ($elementalAreaRelations as $eaRelationName) {
-
             $fieldName = $eaRelationName . 'ID';
 
             $fields->removeByName($fieldName);
@@ -85,7 +89,10 @@ class MultiElementalAreasExtension extends ElementalAreasExtension
                 );
                 $this->getOwner()->invokeWithExtensions(
                     'updateDefaultElementalAreaField',
-                    $editor, $eaRelationName, $area, $types
+                    $editor,
+                    $eaRelationName,
+                    $area,
+                    $types
                 );
                 $relationCMSFields = FieldList::create($editor);
             }
@@ -94,8 +101,7 @@ class MultiElementalAreasExtension extends ElementalAreasExtension
             foreach ($relationCMSFields as $relationCMSField) {
                 if ($insertBefore) {
                     $fields->addFieldToTab($tabPath, $relationCMSField, $insertBefore);
-                }
-                else {
+                } else {
                     $fields->addFieldToTab($tabPath, $relationCMSField);
                 }
             }
@@ -116,18 +122,16 @@ class MultiElementalAreasExtension extends ElementalAreasExtension
         }
 
         $hasOnes = $this->getOwner()->hasOne();
-        foreach ($elementalAreaRelations as $eaRelationship)
-        {
+        foreach ($elementalAreaRelations as $eaRelationship) {
             $areaRelationIDFieldName = $eaRelationship . 'ID';
             $eaClassName = $hasOnes[$eaRelationship];
 
             $areaID = (int) $this->getOwner()->$areaRelationIDFieldName;
             $area = ElementalArea::get()->find('ID', $areaID);
 
-            $myClass = get_class($this->getOwner());
+            $myClass = $this->getOwner()::class;
 
-            if (
-                $areaID < 1
+            if ($areaID < 1
                 || !$area
                 || !$area->exists()
             ) {
@@ -143,12 +147,12 @@ class MultiElementalAreasExtension extends ElementalAreasExtension
             }
 
             $area->write();
-            $this->owner->$areaRelationIDFieldName = $area->ID;
+            $this->getOwner()->$areaRelationIDFieldName = $area->ID;
         }
-        return $this->owner;
+        return $this->getOwner();
     }
 
-    public function onBeforeWrite()
+    protected function onBeforeWrite()
     {
         if (!$this->getOwner()->supportsElemental()) {
             return;
@@ -212,7 +216,6 @@ class MultiElementalAreasExtension extends ElementalAreasExtension
 
         $config = null;
         if (is_array($relationsConfig) && count($relationsConfig) > 0) {
-
             if (isset($relationsConfig[$relationName])) {
                 $config = $relationsConfig[$relationName];
 
@@ -220,12 +223,10 @@ class MultiElementalAreasExtension extends ElementalAreasExtension
                     if (isset($config['stop_element_inheritance'])) {
                         $stopInheritance = (bool) $config['stop_element_inheritance'];
                         if ($stopInheritance) {
-
                             $uninheritedConfig = $this->getOwner()->config()
                                 ->get('elemental_relations', Config::UNINHERITED);
 
                             if (isset($uninheritedConfig[$relationName])) {
-
                                 if (isset($config['allowed_elements'])) {
                                     unset($config['allowed_elements']);
                                 }
@@ -249,7 +250,10 @@ class MultiElementalAreasExtension extends ElementalAreasExtension
         return $config;
     }
 
-    public function getElementalTypes($relationName = null)
+    /**
+     * @return mixed[]
+     */
+    public function getElementalTypes($relationName = null): array
     {
         $types = [];
 
@@ -258,12 +262,9 @@ class MultiElementalAreasExtension extends ElementalAreasExtension
 
         $config = $this->getOwner()->config();
         $stopInheritance = (bool) $config->get('stop_element_inheritance');
-
-        $allowedClasses = null;
         if ($stopInheritance) {
             $allowedClasses = $config->get('allowed_elements', Config::UNINHERITED);
-        }
-        else {
+        } else {
             $allowedClasses = $config->get('allowed_elements');
         }
         if (is_array($allowedClasses)) {
@@ -272,8 +273,7 @@ class MultiElementalAreasExtension extends ElementalAreasExtension
 
         if ($stopInheritance) {
             $disallowedElements = $config->get('disallowed_elements', Config::UNINHERITED);
-        }
-        else {
+        } else {
             $disallowedElements = $config->get('disallowed_elements');
         }
 
@@ -302,7 +302,6 @@ class MultiElementalAreasExtension extends ElementalAreasExtension
             $relationConfig = $this->getOwner()->getElementalRelationConfig($relationName);
 
             if (is_array($relationConfig)) {
-
                 $allowedClasses = null;
                 if (isset($relationConfig['allowed_elements'])) {
                     $allowedClasses = $relationConfig['allowed_elements'];
